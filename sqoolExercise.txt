@@ -175,10 +175,9 @@ chris
 kim
 
 -The names of the students taking any class in the 'cs' department are 'lauren', 'dan', 'naomi', 'kim' and 'chris'
-sqlite>  SELECT students.name FROM classes JOIN classes_students ON classes.id = classes_students.classes_id JOIN students ON classes_students.student_id = students.id WHERE classes.department = (SELECT id from departments WHERE departments.name = 'cs');
+sqlite>  SELECT DISTINCT students.name FROM classes JOIN classes_students ON classes.id = classes_students.classes_id JOIN students ON classes_students.student_id = students.id WHERE classes.department = (SELECT id from departments WHERE departments.name = 'cs');
 name
 lauren
-dan
 dan
 naomi
 kim
