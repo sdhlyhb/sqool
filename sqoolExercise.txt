@@ -1,0 +1,187 @@
+-Look at the departments table in the school database provided to you. How many columns does it have and what are the column names?
+ans: two columns: id and name;
+
+-Which column in the departments table is intended to be uniquely identifying?
+ans: id (INTEGER PRIMARY KEY)
+
+-Look at the teachers schema. Which column is being used as a foreign key?Why might we be using a foreign key here rather than storing the data directly in this table?
+ans: departments id；to store the data in a more efficient way and making changes to the data will be simplified.
+
+- Look at the remaining table schemas in this database. Whiteboard each of the 5 tables, representing them as simple spreadsheet like grids, using arrows to indicate where a particular column is referring to data stored in another table.
+
+- Display the name column for every row in the students table
+
+...
+- Display the name and id of all the teachers in the 'psy' department (should be pamela and sunny, with their respective ids)
+sqlite> SELECT * FROM teachers WHERE department = (SELECT id from departments WHERE name = 'psy');
+id|name|department
+2|pamela|2
+4|sunny|2
+
+-Display the name of the department that 'sunny' teaches for (should be 'psy')
+sqlite> SELECT name FROM departments  WHERE id  = (SELECT department from teachers  WHERE name = 'sunny');
+name
+psy
+
+sqlite> SELECT * FROM departments, classes;
+id|name|id|name|department|teacher
+1|cs|1|javascript|1|1
+1|cs|2|communication|2|2
+1|cs|3|node|1|3
+1|cs|4|compromise|2|4
+2|psy|1|javascript|1|1
+2|psy|2|communication|2|2
+2|psy|3|node|1|3
+2|psy|4|compromise|2|4
+
+
+sqlite> SELECT departments.id, classes.id FROM departments, classes;
+id|id
+1|1
+1|2
+1|3
+1|4
+2|1
+2|2
+2|3
+2|4
+
+
+sqlite> SELECT students.*, teachers.name FROM students, teachers;
+id|name|name
+1|lauren|fred
+1|lauren|pamela
+1|lauren|beth
+1|lauren|sunny
+2|dan|fred
+2|dan|pamela
+2|dan|beth
+2|dan|sunny
+3|naomi|fred
+3|naomi|pamela
+3|naomi|beth
+3|naomi|sunny
+4|kim|fred
+4|kim|pamela
+4|kim|beth
+4|kim|sunny
+5|sam|fred
+5|sam|pamela
+5|sam|beth
+5|sam|sunny
+6|chris|fred
+6|chris|pamela
+6|chris|beth
+6|chris|sunny
+
+//////////////////////////////////////
+
+sqlite> SELECT * FROM students, teachers;
+id|name|id|name|department
+1|lauren|1|fred|1
+1|lauren|2|pamela|2
+1|lauren|3|beth|1
+1|lauren|4|sunny|2
+2|dan|1|fred|1
+2|dan|2|pamela|2
+2|dan|3|beth|1
+2|dan|4|sunny|2
+3|naomi|1|fred|1
+3|naomi|2|pamela|2
+3|naomi|3|beth|1
+3|naomi|4|sunny|2
+4|kim|1|fred|1
+4|kim|2|pamela|2
+4|kim|3|beth|1
+4|kim|4|sunny|2
+5|sam|1|fred|1
+5|sam|2|pamela|2
+5|sam|3|beth|1
+5|sam|4|sunny|2
+6|chris|1|fred|1
+6|chris|2|pamela|2
+6|chris|3|beth|1
+6|chris|4|sunny|2
+
+
+sqlite> SELECT * FROM students INNER JOIN teachers;
+id|name|id|name|department
+1|lauren|1|fred|1
+1|lauren|2|pamela|2
+1|lauren|3|beth|1
+1|lauren|4|sunny|2
+2|dan|1|fred|1
+2|dan|2|pamela|2
+2|dan|3|beth|1
+2|dan|4|sunny|2
+3|naomi|1|fred|1
+3|naomi|2|pamela|2
+3|naomi|3|beth|1
+3|naomi|4|sunny|2
+4|kim|1|fred|1
+4|kim|2|pamela|2
+4|kim|3|beth|1
+4|kim|4|sunny|2
+5|sam|1|fred|1
+5|sam|2|pamela|2
+5|sam|3|beth|1
+5|sam|4|sunny|2
+6|chris|1|fred|1
+6|chris|2|pamela|2
+6|chris|3|beth|1
+6|chris|4|sunny|2
+
+//////////////////////////////
+ -Display the name and id of all the teachers in the 'psy' department (should be pamela and sunny, with their respective ids)
+ sqlite> SELECT teachers.name, teachers.id FROM teachers INNER JOIN departments ON teachers.department = departments.id WHERE departments.name = 'psy';
+name|id
+pamela|2
+sunny|4
+
+
+////////////////////////////////
+-Display the name of the department that 'sunny' teaches for (should be 'psy')
+sqlite> SELECT departments.name from teachers INNER JOIN departments ON teachers.department = departments.id WHERE teachers.name = 'sunny';
+name
+psy
+
+
+//////////////////////////////////////////
+sqlite> SELECT teachers.name FROM teachers INNER JOIN departments  ON departments.name = "cs" AND teachers.department = departments.id;
+name
+fred
+beth
+
+The left outer join will return all the same information as an inner join, but will also return all entries from the first table in the query, even the ones that don't meet the ON condition.
+sqlite> SELECT teachers.name FROM teachers LEFT OUTER JOIN departments ON departments.name = "cs" AND teachers.department = departments.id;
+name
+fred
+pamela
+beth
+sunny
+
+
+////////////////////////////
+-Which classes is 'sam' taking? (confirm your answer below)
+sqlite> SELECT classes.name FROM classes JOIN classes_students ON classes.id = classes_students.classes_id JOIN students ON classes_students.student_id = students.id WHERE students.name = 'sam';
+name
+communication
+
+-What are the names of the students in the 'compromise' class?
+sqlite> SELECT students.name FROM classes JOIN classes_students ON classes.id = classes_students.classes_id JOIN students ON classes_students.student_id = students.id WHERE classes.name = 'compromise';
+name
+naomi
+chris
+kim
+
+-The names of the students taking any class in the 'cs' department are 'lauren', 'dan', 'naomi', 'kim' and 'chris'
+sqlite>  SELECT students.name FROM classes JOIN classes_students ON classes.id = classes_students.classes_id JOIN students ON classes_students.student_id = students.id WHERE classes.department = (SELECT id from departments WHERE departments.name = 'cs');
+name
+lauren
+dan
+dan
+naomi
+kim
+chris
+
+
